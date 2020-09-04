@@ -1,0 +1,56 @@
+#!/bin/bash
+
+cd /var/www/dev2.life-smi.ru/
+git fetch --all
+git reset --hard origin/dev2
+
+setVersion() {
+    local fileVersion='version.txt'
+
+    if [ ! -f ${fileVersion} ]; then touch version.txt; fi
+
+    local currentVersion
+    currentVersion=`sed -n '1,100p' ${fileVersion}`
+
+    if empty "${currentVersion}"
+    then
+        currentVersion=0
+    fi
+
+    currentVersion=$((currentVersion+1))
+    #echo $currentVersion
+    >$fileVersion
+    echo $currentVersion >> $fileVersion
+}
+
+function empty
+{
+    local var="$1"
+
+    # Return true if:
+    # 1.    var is a null string ("" as empty string)
+    # 2.    a non set variable is passed
+    # 3.    a declared variable or array but without a value is passed
+    # 4.    an empty array is passed
+    if test -z "$var"
+    then
+        [[ $( echo "1" ) ]]
+        return
+
+    # Return true if var is zero (0 as an integer or "0" as a string)
+    elif [ "$var" == 0 2> /dev/null ]
+    then
+        [[ $( echo "1" ) ]]
+        return
+
+    # Return true if var is 0.0 (0 as a float)
+    elif [ "$var" == 0.0 2> /dev/null ]
+    then
+        [[ $( echo "1" ) ]]
+        return
+    fi
+
+    [[ $( echo "" ) ]]
+}
+
+setVersion
